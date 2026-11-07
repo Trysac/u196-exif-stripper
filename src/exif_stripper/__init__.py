@@ -1,21 +1,22 @@
-"""Strip EXIF, GPS, XMP, IPTC and comments from JPEG, PNG and WebP by rewriting container segments byte-exactly, without decoding pixels"""
+"""Strip EXIF, GPS, XMP, IPTC and comments from JPEG, PNG and WebP images byte-exactly."""
 
 from __future__ import annotations
 
-__all__ = ["__version__", "normalize"]
+import logging
+
+from .core import ExifStripError, Removed, StripResult, inspect, strip
+from .tiff import MetadataBlock
+
+__all__ = [
+    "ExifStripError",
+    "MetadataBlock",
+    "Removed",
+    "StripResult",
+    "__version__",
+    "inspect",
+    "strip",
+]
 
 __version__ = "0.1.0"
 
-
-def normalize(value: str) -> str:
-    """Return ``value`` trimmed and lower-cased.
-
-    Placeholder API created by the template: replace it with the utility's real behavior.
-
-    Raises:
-        ValueError: if ``value`` is empty or only whitespace.
-    """
-    cleaned = value.strip()
-    if not cleaned:
-        raise ValueError("value must not be empty")
-    return cleaned.lower()
+logging.getLogger(__name__).addHandler(logging.NullHandler())

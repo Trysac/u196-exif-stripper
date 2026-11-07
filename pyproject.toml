@@ -19,6 +19,9 @@ classifiers = [
 ]
 dependencies = []
 
+[project.scripts]
+exif-stripper = "exif_stripper.__main__:main"
+
 [project.urls]
 Homepage = "https://github.com/Trysac/u196-exif-stripper"
 Source = "https://github.com/Trysac/u196-exif-stripper"
