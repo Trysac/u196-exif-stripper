@@ -2,18 +2,14 @@
 
 ## Threat model
 
-`trysac-exif-stripper` is a pure library without I/O. The main risks are:
+This utility is designed as a library with no runtime dependencies. It does not perform any I/O or network requests. Risks related to untrusted input are mitigated through:
 
-- **Supply chain**: a compromised dependency or CI action. Mitigation: no runtime dependencies,
-  Dependabot weekly updates, actions pinned to major versions, minimal workflow permissions.
-- **Leaked secrets**: tokens committed by mistake. Mitigation: `gitleaks` runs in the local gates
-  and in CI; `.env` files are git-ignored.
-- **Untrusted input**: callers may pass hostile strings. Mitigation: validate input and fail with
-  explicit exceptions; never `eval`, `exec` or deserialize untrusted data.
+- **Bounds Checking**: `max_bytes` defaults to 100 MB; inputs exceeding this raise an `ExifStripError`.
+- **Depth Limits**: The TIFF parser enforces a recursion limit of 10 and a maximum of 1000 IFD entries per block to prevent stack exhaustion or denial of service.
+- **Input Sanitization**: Errors are explicit. No `eval` or deserialization (e.g., pickle) is used. Malformed structures result in `ExifStripError` rather than crashing.
 
-## Publishing
+## Limits
 
-Releases are published to PyPI with trusted publishing (OIDC) when available, never with a
-long-lived token stored in the repository.
-
-To report a vulnerability, see [SECURITY.md](../SECURITY.md).
+- JPEG markers are traversed linearly; arbitrary marker nesting is not supported.
+- PNG CRC mismatch will raise a `corrupt` error, preventing further processing of potentially compromised files.
+- TIFF header parsing returns `(None, False)` upon encountering structural malformations to ensure callers can handle unreadable metadata gracefully without risking exceptions.

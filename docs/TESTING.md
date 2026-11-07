@@ -1,20 +1,18 @@
 # Testing
 
-## Running
+## Overview
 
-```sh
-uv run pytest --cov=exif_stripper   # tests with coverage report
-uv run python scripts/check.py      # every gate, as CI and the factory run it
-```
+Tests are located in `tests/` and use `pytest` to exercise the library's public API (`strip`, `inspect`, `parse_tiff`).
 
-## Policy
+## Test Structure
 
-- Branch coverage of `src/exif_stripper` must stay at or above 80 %; the gate fails below it.
-- Tests exercise the public API (`import exif_stripper`) and assert every observable effect:
-  return values, raised exceptions and their messages.
-- Each bug fix starts with a failing test that reproduces it.
-- Tests are deterministic: no network, no wall clock, no dependence on test order.
+- `test_exif_stripper.py`: Validates the full stripping pipeline across JPEG, PNG, and WebP using manually constructed byte buffers that represent minimal valid containers.
+- Fixture generation: Tests construct binary payloads byte-by-byte (e.g., `build_jpeg_criterion_1`) to verify the stripping logic without requiring external binary files.
 
-## Layout
+## Coverage
 
-`tests/test_<module>.py` mirrors each public module. Shared fixtures go in `tests/conftest.py`.
+- JPEG markers (APP1/Exif, COM, SOS).
+- PNG chunks (e.g., `eXIf`, `tEXt`, `iCCP`).
+- WebP RIFF headers and `VP8X` flag updates.
+- Edge cases: Truncated headers, missing chunks, wrong CRCs, and inputs exceeding 100MB.
+- TIFF IFD loop detection.
