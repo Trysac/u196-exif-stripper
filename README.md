@@ -4,8 +4,10 @@ Strip EXIF, GPS, XMP, IPTC and comments from JPEG, PNG and WebP images byte-exac
 
 ## Installation
 
+Not published to PyPI yet. Install it from GitHub:
+
 ```bash
-pip install exif-stripper
+pip install "git+https://github.com/Trysac/u196-exif-stripper"
 ```
 
 ## Usage
